@@ -1,0 +1,11 @@
+subscription_id        = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+client_id              = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+client_secret          = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+tenant_id              = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+//resource variables
+resource_group_name    = "Panda_dev"
+location               = "eastus"
+storage_account_name   = "expandastora"
+account_tier           = "Standard"
+account_replication_type = "LRS"
