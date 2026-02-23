@@ -26,27 +26,29 @@ This project uses Terraform and Azure DevOps pipelines to provision Azure resour
 
 ## Architecture 
 
-+-----------------------+           +----------------------+
-| Azure DevOps Repo     |           | Azure DevOps Pipelines|
-|  - main.tf            |  Git push |  - Terraform Tasks   |
-|  - backend.tf         | --------> |  - Init / Plan / Apply|
-|  - variables.tf       |           +----------------------+
-+-----------------------+                     |
-                                              v
-                                      +------------------+
-                                      | Self-hosted Agent|
-                                      |  - Windows/Linus/MacOs    
-                                      |  - Terraform     |
-                                      |  - PAT auth      |
-                                      +------------------+
-                                              |
-                                              v
-                                      +------------------+
-                                      | Azure Resources  |
-                                      |  - ResourceGroup |
-                                      |  - Storage Account|
-                                      |  - Container (TF State)|
-                                      +------------------+
+Azure DevOps Repo
+  ├─ main.tf
+  ├─ backend.tf
+  └─ variables.tf
+       │
+       ▼
+Azure DevOps Pipeline
+  ├─ Terraform Installer
+  ├─ Terraform Init
+  ├─ Terraform Plan
+  └─ Terraform Apply
+       │
+       ▼
+Self-Hosted Agent (Windows)
+  ├─ Terraform installed
+  └─ PAT authentication
+       │
+       ▼
+Azure Resources
+  ├─ Resource Group
+  ├─ Storage Account
+  └─ Container (Terraform State)
+  
 =======================================================================================
 
 
