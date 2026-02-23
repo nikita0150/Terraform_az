@@ -10,3 +10,4 @@ resource "azurerm_resource_group" "poc" {
 output "rg_name" {
   value = azurerm_resource_group.poc.name
 }
+
