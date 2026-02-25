@@ -45,6 +45,7 @@ steps:
 # Terraform Plan
 - task: TerraformTaskV4@4
   displayName: 'Terraform Plan'
+  timeoutInMinutes: 5
   inputs:
     provider: 'azurerm'
     command: 'plan'
