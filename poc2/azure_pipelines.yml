@@ -18,10 +18,6 @@ resources:
       endpoint: github.com_nikita0150
 
 steps:
-
-# Checkout Azure Repo (pipeline YAML location)
-- checkout: self
-
 # Checkout GitHub Repo (Terraform code)
 - checkout: terraformRepo
   path: terraform-code
@@ -30,69 +26,6 @@ steps:
 - task: TerraformInstaller@1
   inputs:
     terraformVersion: 'latest'
-
-# Verify terraform executable on agent (helps debug ENOENT)
-- task: PowerShell@2
-  displayName: 'Verify terraform executable on agent'
-  inputs:
-    targetType: 'inline'
-    script: |
-      Write-Host "Checking terraform path on agent"
-      $p = 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform\1.14.5\x64\terraform.exe'
-      if (Test-Path $p) {
-        Write-Host 'FOUND:' $p
-        & $p -version
-      } else {
-        Write-Host 'NOT FOUND:' $p
-        Write-Host 'Listing terraform tool cache (two levels):'
-        Get-ChildItem 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform' -Recurse -Depth 2 | Select-Object FullName, Mode, Length -First 50
-      }
-      Write-Host 'ICACLS output:'
-      if (Test-Path $p) {
-        icacls $p
-      } else {
-        Write-Host 'icacls failed or file missing'
-      }
-
-# Debug: run terraform init via explicit executable to capture spawn errors
-- task: PowerShell@2
-  displayName: 'Debug: run terraform init (direct)'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $workDir = "$(Build.SourcesDirectory)\terraform-code\poc2"
-      Write-Host "Working directory: $workDir"
-      Push-Location $workDir
-      try {
-        $cmd = Get-Command terraform -ErrorAction SilentlyContinue
-        if ($cmd) { $tf = $cmd.Source } else { $tf = 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform\1.14.5\x64\terraform.exe' }
-        Write-Host ("Using terraform executable: {0}" -f $tf)
-        if (-not (Test-Path $tf)) { throw ("terraform executable not found at {0}" -f $tf) }
-
-        $args = @(
-          'init',
-          '-backend-config=storage_account_name=storageacc235',
-          '-backend-config=container_name=tfstate',
-          '-backend-config=key=terraform.tfstate',
-          '-backend-config=resource_group_name=tfstate-rg'
-        )
-
-        $maxAttempts = 2
-        for ($i=1; $i -le $maxAttempts; $i++) {
-          Write-Host ("Attempt {0}: running terraform {1}" -f $i, ($args -join ' '))
-          try {
-            $proc = Start-Process -FilePath $tf -ArgumentList $args -NoNewWindow -PassThru -Wait -ErrorAction Stop
-            Write-Host "terraform exited with code $($proc.ExitCode)"
-            if ($proc.ExitCode -eq 0) { break }
-          } catch {
-            Write-Host "Error invoking terraform: $_"
-            if ($i -lt $maxAttempts) { Write-Host 'Retrying in 5s...'; Start-Sleep -Seconds 5 }
-            else { throw }
-          }
-        }
-      } finally {
-        Pop-Location
-      }
 
 # Terraform Init
 - task: TerraformTaskV4@4
