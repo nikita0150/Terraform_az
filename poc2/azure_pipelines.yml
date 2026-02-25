@@ -8,7 +8,7 @@ pool:
 
 variables:
   azureServiceConnection: 'Terraform'
-  workingDir: '$(System.DefaultWorkingDirectory)/poc2'
+  workingDir: '$(System.DefaultWorkingDirectory)\poc2'
   System.Debug: 'true'
 
 steps:
@@ -16,14 +16,13 @@ steps:
 # Checkout current repo (main branch)
 - checkout: self
 
-# Debug step (VERY IMPORTANT)
 - script: |
-    echo "Current directory:"
+    echo Current directory:
     cd
-    echo "Listing repo root:"
+    echo Listing repo root:
     dir
-    echo "Listing Terraform folder:"
-    dir $(workingDir)
+    echo Listing Terraform folder:
+    dir "$(workingDir)"
   displayName: 'Verify Terraform Directory'
 
 # Install Terraform
