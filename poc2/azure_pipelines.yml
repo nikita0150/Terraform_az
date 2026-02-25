@@ -41,7 +41,7 @@ steps:
     backendServiceArm: '$(azureServiceConnection)'
     backendAzureRMResourceGroupName: 'Panda_Prod'
     backendAzureRMStorageAccountName: 'storageacc235'
-    backendAzureRMContainerName: 'tfstate'
+    backendAzureRMContainerName: 'tfstatefile'
     backendAzureRMKey: 'terraform.tfstate'
 
 # Terraform Plan
