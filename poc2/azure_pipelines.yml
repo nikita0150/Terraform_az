@@ -47,7 +47,11 @@ steps:
         Get-ChildItem 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform' -Recurse -Depth 2 | Select-Object FullName, Mode, Length -First 50
       }
       Write-Host 'ICACLS output:'
-      icacls $p || Write-Host 'icacls failed or file missing'
+      if (Test-Path $p) {
+        icacls $p
+      } else {
+        Write-Host 'icacls failed or file missing'
+      }
 
 # Terraform Init
 - task: TerraformTaskV4@4
