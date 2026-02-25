@@ -2,7 +2,9 @@ trigger:
 - main
 
 pool:
-  name: windows_agent
+  name: 'Default'
+  demands:
+  - agent.name -equals windows_agent
 
 variables:
   azureServiceConnection: 'Terraform'
