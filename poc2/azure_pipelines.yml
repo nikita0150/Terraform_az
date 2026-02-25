@@ -8,22 +8,27 @@ pool:
 
 variables:
   azureServiceConnection: 'Terraform'
+  workingDir: '$(System.DefaultWorkingDirectory)/poc2'
   System.Debug: 'true'
 
-resources:
-  repositories:
-    - repository: terraformRepo
-      type: github
-      name: nikita0150/Terraform_az
-      endpoint: github.com_nikita0150
-
 steps:
-# Checkout GitHub Repo (Terraform code)
-- checkout: terraformRepo
-  path: terraform-code
+
+# Checkout current repo (main branch)
+- checkout: self
+
+# Debug step (VERY IMPORTANT)
+- script: |
+    echo "Current directory:"
+    cd
+    echo "Listing repo root:"
+    dir
+    echo "Listing Terraform folder:"
+    dir $(workingDir)
+  displayName: 'Verify Terraform Directory'
 
 # Install Terraform
 - task: TerraformInstaller@1
+  displayName: 'Install Terraform'
   inputs:
     terraformVersion: 'latest'
 
@@ -33,7 +38,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
-    workingDirectory: 'terraform-code/poc2'
+    workingDirectory: '$(workingDir)'
     backendServiceArm: '$(azureServiceConnection)'
     backendAzureRMResourceGroupName: 'tfstate-rg'
     backendAzureRMStorageAccountName: 'storageacc235'
@@ -46,7 +51,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
-    workingDirectory: 'terraform-code/poc2'
+    workingDirectory: '$(workingDir)'
     environmentServiceNameAzureRM: '$(azureServiceConnection)'
 
 # Terraform Apply
@@ -55,6 +60,6 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'apply'
-    workingDirectory: 'terraform-code/poc2'
     commandOptions: '-auto-approve'
+    workingDirectory: '$(workingDir)'
     environmentServiceNameAzureRM: '$(azureServiceConnection)'
