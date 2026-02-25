@@ -30,6 +30,25 @@ steps:
   inputs:
     terraformVersion: 'latest'
 
+# Verify terraform executable on agent (helps debug ENOENT)
+- task: PowerShell@2
+  displayName: 'Verify terraform executable on agent'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Checking terraform path on agent"
+      $p = 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform\1.14.5\x64\terraform.exe'
+      if (Test-Path $p) {
+        Write-Host 'FOUND:' $p
+        & $p -version
+      } else {
+        Write-Host 'NOT FOUND:' $p
+        Write-Host 'Listing terraform tool cache (two levels):'
+        Get-ChildItem 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform' -Recurse -Depth 2 | Select-Object FullName, Mode, Length -First 50
+      }
+      Write-Host 'ICACLS output:'
+      icacls $p || Write-Host 'icacls failed or file missing'
+
 # Terraform Init
 - task: TerraformTaskV4@4
   displayName: 'Terraform Init'
