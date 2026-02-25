@@ -39,7 +39,7 @@ steps:
     command: 'init'
     workingDirectory: '$(workingDir)'
     backendServiceArm: '$(azureServiceConnection)'
-    backendAzureRMResourceGroupName: 'tfstate-rg'
+    backendAzureRMResourceGroupName: 'Panda-Prod'
     backendAzureRMStorageAccountName: 'storageacc235'
     backendAzureRMContainerName: 'tfstate'
     backendAzureRMKey: 'terraform.tfstate'
