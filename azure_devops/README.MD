@@ -17,8 +17,7 @@ Platform: Azure DevOps
 A **Self-Hosted Agent** is a machine (VM, physical server, or on-prem server) that you configure to run Azure DevOps pipelines.
 
 Instead of using Microsoft-hosted agents, you manage and maintain your own build agent.
-
----
+ ---
 
 ## 🏗 Why Use a Self-Hosted Agent?
 

@@ -6,7 +6,7 @@ pool:
 
 variables:
   azureServiceConnection: 'Terraform'
-  workingDir: '$(System.DefaultWorkingDirectory)\poc2'
+  workingDir: '$(System.DefaultWorkingDirectory)/poc2'
   System.Debug: 'true'
 
 steps:
