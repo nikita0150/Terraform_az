@@ -71,6 +71,19 @@ Use self-hosted agents when:
 ./run.sh
 
 ---
+## Self hosted agent 
+trigger:
+- main
+
+pool:
+  name: Default   # or your pool name
+
+steps:
+- script: |
+    echo Agent is working!
+    hostname
+
+---
 
 # 📌 What is a Service Connection?
 

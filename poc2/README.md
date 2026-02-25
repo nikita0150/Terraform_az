@@ -51,14 +51,3 @@ Azure Resources
   
 =======================================================================================
 
-## Self hosted agent 
-trigger:
-- main
-
-pool:
-  name: Default   # or your pool name
-
-steps:
-- script: |
-    echo Agent is working!
-    hostname
