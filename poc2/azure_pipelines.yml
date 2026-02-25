@@ -1,0 +1,61 @@
+trigger:
+- main
+
+pool:
+  name: windows_agent
+
+variables:
+  azureServiceConnection: 'Terraform'
+
+resources:
+  repositories:
+    - repository: terraformRepo
+      type: github
+      name: nikita0150/Terraform_az
+      endpoint: github.com_nikita0150
+
+steps:
+
+# Checkout Azure Repo (pipeline YAML location)
+- checkout: self
+
+# Checkout GitHub Repo (Terraform code)
+- checkout: terraformRepo
+  path: terraform-code
+
+# Install Terraform
+- task: TerraformInstaller@1
+  inputs:
+    terraformVersion: 'latest'
+
+# Terraform Init
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Init'
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: 'terraform-code/poc2'
+    backendServiceArm: '$(azureServiceConnection)'
+    backendAzureRMResourceGroupName: 'tfstate-rg'
+    backendAzureRMStorageAccountName: 'storageacc235'
+    backendAzureRMContainerName: 'tfstate'
+    backendAzureRMKey: 'terraform.tfstate'
+
+# Terraform Plan
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Plan'
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: 'terraform-code/poc2'
+    environmentServiceNameAzureRM: '$(azureServiceConnection)'
+
+# Terraform Apply
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Apply'
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: 'terraform-code/poc2'
+    commandOptions: '-auto-approve'
+    environmentServiceNameAzureRM: '$(azureServiceConnection)'
