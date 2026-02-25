@@ -65,14 +65,12 @@ Use self-hosted agents when:
 - macOS
 
 4. Configure agent:
-```bash
 ./config.sh
 
 5. Run agent
 ./run.sh
 
 ---
-
 
 # 📌 What is a Service Connection?
 
@@ -155,7 +153,7 @@ From there you can:
 
 # 🧪 Example Usage in YAML Pipeline
 
-```yaml
+.yaml - 
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'My-Service-Connection'
