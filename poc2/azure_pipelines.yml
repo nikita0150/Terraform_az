@@ -8,6 +8,7 @@ pool:
 
 variables:
   azureServiceConnection: 'Terraform'
+  System.Debug: 'true'
 
 resources:
   repositories:
@@ -51,6 +52,46 @@ steps:
         icacls $p
       } else {
         Write-Host 'icacls failed or file missing'
+      }
+
+# Debug: run terraform init via explicit executable to capture spawn errors
+- task: PowerShell@2
+  displayName: 'Debug: run terraform init (direct)'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $workDir = "$(Build.SourcesDirectory)\terraform-code\poc2"
+      Write-Host "Working directory: $workDir"
+      Push-Location $workDir
+      try {
+        $tf = (Get-Command terraform -ErrorAction SilentlyContinue)?.Source
+        if (-not $tf) { $tf = 'C:\Users\Admin\Downloads\agent\_work\_tool\terraform\1.14.5\x64\terraform.exe' }
+        Write-Host "Using terraform executable: $tf"
+        if (-not (Test-Path $tf)) { throw "terraform executable not found at $tf" }
+
+        $args = @(
+          'init',
+          '-backend-config=storage_account_name=storageacc235',
+          '-backend-config=container_name=tfstate',
+          '-backend-config=key=terraform.tfstate',
+          '-backend-config=resource_group_name=tfstate-rg'
+        )
+
+        $maxAttempts = 2
+        for ($i=1; $i -le $maxAttempts; $i++) {
+          Write-Host "Attempt $i: running terraform $($args -join ' ')"
+          try {
+            $proc = Start-Process -FilePath $tf -ArgumentList $args -NoNewWindow -PassThru -Wait -ErrorAction Stop
+            Write-Host "terraform exited with code $($proc.ExitCode)"
+            if ($proc.ExitCode -eq 0) { break }
+          } catch {
+            Write-Host "Error invoking terraform: $_"
+            if ($i -lt $maxAttempts) { Write-Host 'Retrying in 5s...'; Start-Sleep -Seconds 5 }
+            else { throw }
+          }
+        }
+      } finally {
+        Pop-Location
       }
 
 # Terraform Init
