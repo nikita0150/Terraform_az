@@ -1,27 +1,26 @@
 trigger:
-- main
+- main  #the pipeline will be triggered on every push to the main branch
 
 pool:
   name: 'Default'
 
 variables:
-  azureServiceConnection: 'Terraform'
-  workingDir: '$(System.DefaultWorkingDirectory)/poc2'
-  System.Debug: 'true'
+  azureServiceConnection: 'Terraform'  #name of the Azure service connection in Azure DevOps
+  workingDir: '$(System.DefaultWorkingDirectory)/poc2' #path to the directory containing Terraform configuration files - Go to the pipeline's root repo folder
+  System.Debug: 'true'  #this enables detailed logging for debugging purposes
 
 steps:
 
-# Checkout repository
+# Checkout current repo (main branch), if is self it means it will check main branch by default!
 - checkout: self
 
-# Verify Terraform folder
-- script: |
-    echo "Current directory:"
-    pwd
-    echo "Repository contents:"
-    ls -la
-    echo "Terraform folder contents:"
-    ls -la $(workingDir)
+- script: | # this is for debugging  
+    echo Current directory:
+    cd 
+    echo Listing repo root:
+    dir
+    echo Listing Terraform folder:
+    dir "$(workingDir)"
   displayName: 'Verify Terraform Directory'
 
 # Install Terraform
@@ -30,7 +29,7 @@ steps:
   inputs:
     terraformVersion: 'latest'
 
-# Terraform Init (Remote Backend)
+# Terraform Init
 - task: TerraformTaskV4@4
   displayName: 'Terraform Init'
   inputs:
@@ -42,33 +41,23 @@ steps:
     backendAzureRMStorageAccountName: 'storageacc235'
     backendAzureRMContainerName: 'tfstatefile'
     backendAzureRMKey: 'terraform.tfstate'
-    commandOptions: '-input=false -no-color'
 
-# Terraform Validate (Recommended)
-- task: TerraformTaskV4@4
-  displayName: 'Terraform Validate'
-  inputs:
-    provider: 'azurerm'
-    command: 'validate'
-    workingDirectory: '$(workingDir)'
-
-# Terraform Plan (Non-interactive)
+# Terraform Plan
 - task: TerraformTaskV4@4
   displayName: 'Terraform Plan'
-  timeoutInMinutes: 10
+  timeoutInMinutes: 5
   inputs:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(workingDir)'
     environmentServiceNameAzureRM: '$(azureServiceConnection)'
-    commandOptions: '-input=false -no-color'
 
-# Terraform Apply (Auto approve, non-interactive)
+# Terraform Apply
 - task: TerraformTaskV4@4
   displayName: 'Terraform Apply'
   inputs:
     provider: 'azurerm'
     command: 'apply'
+    commandOptions: '-auto-approve'
     workingDirectory: '$(workingDir)'
     environmentServiceNameAzureRM: '$(azureServiceConnection)'
-    commandOptions: '-auto-approve -input=false -no-color'
