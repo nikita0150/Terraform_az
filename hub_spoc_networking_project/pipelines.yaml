@@ -1,0 +1,49 @@
+trigger:
+- main
+
+pool:
+  name : 'Default'
+
+variables:
+  azureServiceConnection: 'Terraform'
+  workingDir: '$(System.DefaultWorkingDirectory)/networking_project/env/dev'
+  System.Debug: 'true'
+
+steps:
+
+- checkout: self
+
+# Install Terraform
+- task: TerraformInstaller@1
+  inputs:
+    terraformVersion: 'latest'
+
+# Terraform Init
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Init'
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: '$(azureServiceConnection)'
+    backendAzureRmResourceGroupName: 'rg-tfstate'
+    backendAzureRmStorageAccountName: 'tfstatehubspoke34'
+    backendAzureRmContainerName: 'tfstatefile'
+    backendAzureRmKey: 'networking.tfstate'
+    workingDirectory: '$(workingDir)'
+
+# Terraform Validate
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Validate'
+  inputs:
+    provider: 'azurerm'
+    command: 'validate'
+    workingDirectory: '$(workingDir)'
+
+# Terraform Plan
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Plan'
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: '$(azureServiceConnection)'
+    workingDirectory: '$(workingDir)'
