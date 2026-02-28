@@ -30,6 +30,7 @@ steps:
     backendAzureRmContainerName: 'tfstatefile'
     backendAzureRmKey: 'networking.tfstate'
     workingDirectory: '$(workingDir)'
+    commandOptions: '-input=false -no-color'
 
 # Terraform Validate
 - task: TerraformTaskV4@4
