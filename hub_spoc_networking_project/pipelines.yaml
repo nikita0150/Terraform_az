@@ -31,20 +31,3 @@ steps:
     backendAzureRmKey: 'networking.tfstate'
     workingDirectory: '$(workingDir)'
     commandOptions: '-input=false -no-color'
-
-# Terraform Validate
-- task: TerraformTaskV4@4
-  displayName: 'Terraform Validate'
-  inputs:
-    provider: 'azurerm'
-    command: 'validate'
-    workingDirectory: '$(workingDir)'
-
-# Terraform Plan
-- task: TerraformTaskV4@4
-  displayName: 'Terraform Plan'
-  inputs:
-    provider: 'azurerm'
-    command: 'plan'
-    environmentServiceNameAzureRM: '$(azureServiceConnection)'
-    workingDirectory: '$(workingDir)'
