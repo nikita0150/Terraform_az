@@ -6,49 +6,30 @@ pool:
 
 variables:
   workingDir: '$(System.DefaultWorkingDirectory)/hub_spoc_networking_project/env/dev'
-  tfvarFile: '$(workingDir)/dev.tfvars'
+  tfvarFile: 'dev.tfvars'  # relative to workingDir
+
 steps:
 
 - checkout: self
 
-# Azure Login using Service Connection
+# Terraform Init, Validate, Plan in one task with Azure login
 - task: AzureCLI@2
-  displayName: 'Azure Login'
+  displayName: 'Terraform Init/Validate/Plan'
   inputs:
-    azureSubscription: 'Terraform'
+    azureSubscription: 'Terraform'   # your service connection
     scriptType: bash
     scriptLocation: inlineScript
-    inlineScript: |
-      echo "Logged into Azure"
-
-# Terraform Init
-- script: |
-    terraform init \
-      -backend-config="resource_group_name=rg-tfstate" \
-      -backend-config="storage_account_name=tfstatehubspoke34" \
-      -backend-config="container_name=tfstatefile" \
-      -backend-config="key=networking.tfstate" \
-      -input=false -no-color
-  displayName: 'Terraform Init'
-  workingDirectory: '$(workingDir)'
-
-# Terraform Validate
-- script: |
-    terraform validate
-  displayName: 'Terraform Validate'
-  workingDirectory: '$(workingDir)'
-
-# Terraform Plan
-- task: Bash@3
-  displayName: 'Terraform Plan'
-  inputs:
-    targetType: inline
     workingDirectory: '$(workingDir)'
-    script: |
-      echo "Starting Terraform Plan"
-      export ARM_CLIENT_ID=$(az devops service-endpoint show --id <service-connection-id> --query "authorization.parameters.clientId" -o tsv)
-      export ARM_CLIENT_SECRET=$(az devops service-endpoint show --id <service-connection-id> --query "authorization.parameters.serviceprincipalkey" -o tsv)
-      export ARM_SUBSCRIPTION_ID=$(az devops service-endpoint show --id <service-connection-id> --query "authorization.parameters.subscriptionId" -o tsv)
-      export ARM_TENANT_ID=$(az devops service-endpoint show --id <service-connection-id> --query "authorization.parameters.tenantId" -o tsv)
+    inlineScript: |
+      echo "Starting Terraform workflow"
 
-      terraform plan -var-file="$(tfVarFile)" -out=tfplan -input=false -no-color
+      terraform init \
+        -backend-config="resource_group_name=rg-tfstate" \
+        -backend-config="storage_account_name=tfstatehubspoke34" \
+        -backend-config="container_name=tfstatefile" \
+        -backend-config="key=networking.tfstate" \
+        -input=false -no-color
+
+      terraform validate
+
+      terraform plan -var-file="$(tfvarFile)" -out=tfplan -input=false -no-color
