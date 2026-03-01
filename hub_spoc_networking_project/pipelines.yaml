@@ -2,10 +2,9 @@ trigger:
 - main
 
 pool:
-  name : 'Default'
+  name: 'Default'
 
 variables:
-  azureServiceConnection: 'Terraform'
   workingDir: '$(System.DefaultWorkingDirectory)/networking_project/env/dev'
   System.Debug: 'true'
 
@@ -13,21 +12,24 @@ steps:
 
 - checkout: self
 
-# Install Terraform
-- task: TerraformInstaller@1
+# Azure Login using Service Connection
+- task: AzureCLI@2
+  displayName: 'Azure Login'
   inputs:
-    terraformVersion: 'latest'
+    azureSubscription: 'Terraform'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "Logged into Azure"
 
 # Terraform Init
-- task: TerraformTaskV4@4
+- script: |
+    terraform init \
+      -backend-config="resource_group_name=rg-tfstate" \
+      -backend-config="storage_account_name=tfstatehubspoke34" \
+      -backend-config="container_name=tfstatefile" \
+      -backend-config="key=networking.tfstate" \
+      -input=false -no-color
   displayName: 'Terraform Init'
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    backendServiceArm: '$(azureServiceConnection)'
-    backendAzureRmResourceGroupName: 'rg-tfstate'
-    backendAzureRmStorageAccountName: 'tfstatehubspoke34'
-    backendAzureRmContainerName: 'tfstatefile'
-    backendAzureRmKey: 'networking.tfstate'
-    workingDirectory: '$(workingDir)'
-    commandOptions: '-input=false -no-color'
+  workingDirectory: '$(workingDir)'
+

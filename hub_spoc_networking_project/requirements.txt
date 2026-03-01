@@ -1,0 +1,20 @@
+sudo apt update
+sudo apt upgrade -y
+sudo apt full-upgrade -y
+
+sudo apt install zip unzip -y
+
+sudo apt install p7zip-full p7zip-rar rar unrar -y
+
+
+sudo adduser azureagent
+sudo usermod -aG sudo azureagent
+
+sudo mv /root/agent /home/azureagent/
+sudo chown -R azureagent:azureagent /home/azureagent/agent
+
+su - azureagent
+cd agent
+
+sudo ./svc.sh install
+sudo ./svc.sh start
