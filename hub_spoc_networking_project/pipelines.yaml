@@ -12,6 +12,13 @@ steps:
 
 - checkout: self
 
+- script: |
+    echo "Root directory:"
+    pwd
+    echo "Listing repo structure:"
+    ls -R
+  displayName: "Debug Repo Structure"
+  
 # Azure Login using Service Connection
 - task: AzureCLI@2
   displayName: 'Azure Login'
