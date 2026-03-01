@@ -1,28 +1,48 @@
 trigger:
 - main
+- dev
 
 pool:
   name: 'Default'
 
 variables:
-  workingDir: '$(System.DefaultWorkingDirectory)/hub_spoc_networking_project/env/dev'
-  tfvarFile: 'dev.tfvars'  # relative to workingDir
+  workingDir: '$(System.DefaultWorkingDirectory)/hub_spoc_networking_project/env'
+  tfvarFile: 'dev.tfvars'   # default, will be overridden dynamically
 
 steps:
 
 - checkout: self
 
-# Terraform Init, Validate, Plan in one task with Azure login
+# Set TFVAR file dynamically based on branch
+- script: |
+    echo "Determining environment from branch name..."
+    if [[ "$(Build.SourceBranchName)" == "main" ]]; then
+      echo "Using prod.tfvars"
+      echo "##vso[task.setvariable variable=tfvarFile]prod.tfvars"
+    else
+      echo "Using dev.tfvars"
+      echo "##vso[task.setvariable variable=tfvarFile]dev.tfvars"
+  displayName: 'Set TFVAR file dynamically'
+
+# Azure login
 - task: AzureCLI@2
-  displayName: 'Terraform Init/Validate/Plan'
+  displayName: 'Azure Login'
   inputs:
-    azureSubscription: 'Terraform'   # your service connection
+    azureSubscription: 'Terraform'
     scriptType: bash
     scriptLocation: inlineScript
-    workingDirectory: '$(workingDir)'
     inlineScript: |
-      echo "Starting Terraform workflow"
+      echo "Logged into Azure"
 
+# Terraform Init
+- task: AzureCLI@2
+  displayName: 'Terraform Init'
+  inputs:
+    azureSubscription: 'Terraform'
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: '$(workingDir)/$(Build.SourceBranchName)'
+    inlineScript: |
       terraform init \
         -backend-config="resource_group_name=rg-tfstate" \
         -backend-config="storage_account_name=tfstatehubspoke34" \
@@ -30,6 +50,24 @@ steps:
         -backend-config="key=networking.tfstate" \
         -input=false -no-color
 
+# Terraform Validate
+- task: AzureCLI@2
+  displayName: 'Terraform Validate'
+  inputs:
+    azureSubscription: 'Terraform'
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: '$(workingDir)/$(Build.SourceBranchName)'
+    inlineScript: |
       terraform validate
 
+# Terraform Plan
+- task: AzureCLI@2
+  displayName: 'Terraform Plan'
+  inputs:
+    azureSubscription: 'Terraform'
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: '$(workingDir)/$(Build.SourceBranchName)'
+    inlineScript: |
       terraform plan -var-file="$(tfvarFile)" -out=tfplan -input=false -no-color
