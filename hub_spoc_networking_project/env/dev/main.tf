@@ -57,7 +57,7 @@ module "spoke_vnet" {
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                      = "hub-to-spoke"
   resource_group_name       = local.hub_rg_name
-  virtual_network_name      = module.hub_vnet.hub_vnet_name
+  virtual_network_name      = local.hub_vnet_name
   remote_virtual_network_id = module.spoke_vnet.spoke_vnet_id
 
   allow_virtual_network_access = true
@@ -69,7 +69,7 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke" {
 resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   name                      = "spoke-to-hub"
   resource_group_name       = local.spoke_rg_name
-  virtual_network_name      = module.spoke_vnet.spoke_vnet_name
+  virtual_network_name      = local.spoke_vnet_name
   remote_virtual_network_id = module.hub_vnet.hub_vnet_id
 
   allow_virtual_network_access = true
