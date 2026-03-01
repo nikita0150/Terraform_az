@@ -2,7 +2,7 @@
 
 output "hub_vnet_id" {
   description = "ID of the Hub Virtual Network"
-  value       = module.hub_vnet.vnet_id
+  value       = module.hub_vnet.hub_vnet_id
 }
 
 output "hub_vnet_name" {
