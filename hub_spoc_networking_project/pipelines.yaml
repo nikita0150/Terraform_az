@@ -6,7 +6,7 @@ pool:
 
 variables:
   workingDir: '$(System.DefaultWorkingDirectory)/hub_spoc_networking_project/env/dev'
-
+  tfvarFile: '$(workingDir)/dev.tfvars'
 steps:
 
 - checkout: self
@@ -40,6 +40,7 @@ steps:
 
 # Terraform Plan
 - script: |
-    terraform plan -out=tfplan -input=false -no-color
+    terraform plan -out=tfplan -var-file="$(tfVarFile)" -input=false -no-color 
+
   displayName: 'Terraform Plan'
   workingDirectory: '$(workingDir)'
