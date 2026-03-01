@@ -6,18 +6,10 @@ pool:
 
 variables:
   workingDir: '$(System.DefaultWorkingDirectory)/hub_spoc_networking_project/env/dev'
-  System.Debug: 'true'
 
 steps:
 
 - checkout: self
-
-- script: |
-    echo "Root directory:"
-    pwd
-    echo "Listing repo structure:"
-    ls -R
-  displayName: "Debug Repo Structure"
 
 # Azure Login using Service Connection
 - task: AzureCLI@2
@@ -40,3 +32,14 @@ steps:
   displayName: 'Terraform Init'
   workingDirectory: '$(workingDir)'
 
+# Terraform Validate
+- script: |
+    terraform validate
+  displayName: 'Terraform Validate'
+  workingDirectory: '$(workingDir)'
+
+# Terraform Plan
+- script: |
+    terraform plan -out=tfplan -input=false -no-color
+  displayName: 'Terraform Plan'
+  workingDirectory: '$(workingDir)'
