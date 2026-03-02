@@ -39,7 +39,7 @@ module "hub_vnet" {
   gateway_subnet_cidr    = var.gateway_subnet_cidr
 
   spoke_vnet_address_space = var.spoke_vnet_address_space
-  
+
   tags = local.final_tags
 }
 
