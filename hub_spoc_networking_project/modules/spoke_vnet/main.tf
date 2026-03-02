@@ -50,8 +50,8 @@ resource "azurerm_route_table" "spoke_rt" {
 }
 
 resource "azurerm_subnet_route_table_association" "spoke_assoc" {
-  for_each = azurerm_subnet.spoke_subnets
-
+  for_each = azurerm_subnet.spoke_subnet
+  
   subnet_id      = each.value.id
   route_table_id = azurerm_route_table.spoke_rt.id
 }
