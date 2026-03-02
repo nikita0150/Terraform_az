@@ -9,7 +9,7 @@ resource "azurerm_virtual_network" "hub_vnet" {
 
 # Generic Subnets
 resource "azurerm_subnet" "generic_subnets" {
-  for_each = var.subnet_prefixes
+  for_each = var.subnet_prefixes 
   name                 = each.key
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
