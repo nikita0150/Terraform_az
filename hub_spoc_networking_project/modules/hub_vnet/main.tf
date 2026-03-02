@@ -75,7 +75,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "default_rules" {
     rule {
       name                  = "allow-http-https"
       protocols             = ["TCP"]
-      source_addresses      = [var.spoke_vnet_address_space]
+      source_addresses      = var.spoke_vnet_address_space
       destination_addresses = ["*"]
       destination_ports     = ["80", "443"]
     }
@@ -87,7 +87,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "default_rules" {
 
     rule {
       name             = "allow-ms-updates"
-      source_addresses = ["10.1.0.0/16"]
+      source_addresses = var.spoke_vnet_address_space
       target_fqdns     = ["*.microsoft.com"]
 
       protocol {

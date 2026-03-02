@@ -64,5 +64,5 @@ variable "gateway_subnet_cidr" {
 
 variable "spoke_vnet_address_space" {
   description = "Address space of spoke VNet"
-  type        = string
+  type        = list(string)
 }
