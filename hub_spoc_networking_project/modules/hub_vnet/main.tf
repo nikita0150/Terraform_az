@@ -88,11 +88,11 @@ resource "azurerm_firewall_policy_rule_collection_group" "default_rules" {
     rule {
       name             = "allow-ms-updates"
       source_addresses = var.spoke_vnet_address_space
-      target_fqdns     = ["*.microsoft.com"]
+      #target_fqdn_tags = ["WindowsUpdate"]
 
-      protocol {
+      protocols {
         port = 443
-        type = "Https"
+        type = "HttpsS"
       }
     }
   }
