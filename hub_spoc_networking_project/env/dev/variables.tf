@@ -29,11 +29,9 @@ variable "firewall_subnet_cidr" {
   type = string
 }
 
-/*
 variable "firewall_sku_tier" {
   type = string
 }
-*/
 
 variable "bastion_subnet_cidr" {
   type = string

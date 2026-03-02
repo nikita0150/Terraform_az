@@ -51,14 +51,21 @@ resource "azurerm_public_ip" "firewall_pip" {
   sku                 = "Standard"
 }
 
-resource "azurerm_public_ip" "firewall_pip" {
-  count = var.create_firewall_subnet ? 1 : 0
-
-  name                = "${var.hub_vnet_name}-azfw-pip"
+resource "azurerm_firewall" "hub_fw" {
+  count               = var.create_firewall_subnet ? 1 : 0
+  name                = "${var.hub_vnet_name}-azfw"
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
+  sku_name            = "AZFW_VNet"
+  sku_tier            = var.firewall_sku_tier
+
+  ip_configuration {
+    name                 = "fw-ipconfig"
+    subnet_id            = azurerm_subnet.firewall_subnet[0].id
+    public_ip_address_id = azurerm_public_ip.firewall_pip[0].id
+  }
+
+  tags = var.tags
 }
 
 # Azure Bastion Subnet (Mandatory Name)

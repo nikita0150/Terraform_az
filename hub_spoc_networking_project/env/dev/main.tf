@@ -30,7 +30,7 @@ module "hub_vnet" {
   
   create_firewall_subnet = true
   firewall_subnet_cidr   = var.firewall_subnet_cidr
-  # firewall_sku_tier      = var.firewall_sku_tier
+  firewall_sku_tier      = var.firewall_sku_tier
 
   create_bastion_subnet  = true
   bastion_subnet_cidr    = var.bastion_subnet_cidr
@@ -50,7 +50,7 @@ module "spoke_vnet" {
   spoke_vnet_address_space = var.spoke_vnet_address_space
 
   subnet_prefixes = var.spoke_subnet_prefixes
-  
+
   firewall_private_ip = module.hub_vnet.firewall_private_ip
   
   tags = local.final_tags
