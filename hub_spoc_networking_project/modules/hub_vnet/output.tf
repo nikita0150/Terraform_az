@@ -24,3 +24,11 @@ output "bastion_subnet_id" {
 output "gateway_subnet_id" {
   value       = try(azurerm_subnet.gateway_subnet[0].id, null)
 }
+
+output "firewall_private_ip" {
+  value = var.create_firewall_subnet ? azurerm_firewall.hub_fw[0].ip_configuration[0].private_ip_address : null
+}
+
+output "firewall_id" {
+  value = var.create_firewall_subnet ? azurerm_firewall.hub_fw[0].id : null
+}

@@ -28,3 +28,8 @@ variable "tags" {
   description = "Tags to be applied to the spoke virtual network and its subnets"
   default     = {}
 }
+
+variable "firewall_private_ip" {
+  type        = string
+  description = "Private IP of Azure Firewall in Hub"
+}

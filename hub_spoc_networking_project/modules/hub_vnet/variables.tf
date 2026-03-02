@@ -37,6 +37,11 @@ variable "firewall_subnet_cidr" {
   default = null
 }
 
+variable "firewall_sku_tier" {
+  type    = string
+  default = "Standard"
+}
+
 variable "create_bastion_subnet" {
   type    = bool
   default = false

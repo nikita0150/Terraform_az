@@ -32,13 +32,33 @@ resource "azurerm_subnet_network_security_group_association" "generic_assoc" {
   network_security_group_id = azurerm_network_security_group.generic_nsg[each.key].id
 }
 
-# Azure Firewall Subnet (Mandatory Name)
+# Azure Firewall Subnet (keep the name as AzureFirewallSubnet - compulsory)
 resource "azurerm_subnet" "firewall_subnet" {
   count = var.create_firewall_subnet ? 1 : 0
   name                 = "AzureFirewallSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
   address_prefixes     = [var.firewall_subnet_cidr]
+}
+
+resource "azurerm_public_ip" "firewall_pip" {
+  count = var.create_firewall_subnet ? 1 : 0
+
+  name                = "${var.hub_vnet_name}-azfw-pip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_public_ip" "firewall_pip" {
+  count = var.create_firewall_subnet ? 1 : 0
+
+  name                = "${var.hub_vnet_name}-azfw-pip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 # Azure Bastion Subnet (Mandatory Name)
