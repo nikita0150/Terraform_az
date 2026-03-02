@@ -92,7 +92,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "default_rules" {
 
       protocols {
         port = 443
-        type = "HttpsS"
+        type = "Https"
       }
     }
   }
