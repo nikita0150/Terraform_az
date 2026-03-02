@@ -1,15 +1,13 @@
-# Microsoft Official documentation pages 
+## Hub Spoke architecture 'POC'
 
-## Networking concepts 
+This project demonstrates a Hub-Spoke architecture implementation where a centralized Hub manages connectivity, routing, and shared services for multiple Spoke environments.
 
-## 1. virtual network concepts
+The objective of this POC was to:
 
-🔍 https://learn.microsoft.com/en-us/azure/virtual-network/concepts-and-best-practices
+- Validate network connectivity between Hub and Spokes
 
-## 2. Firewall 
+- Implement centralized routing
 
-- **Firewall overview :** https://learn.microsoft.com/en-us/azure/firewall/overview
-  
-- **SKU selection :** https://learn.microsoft.com/en-us/azure/firewall/choose-firewall-sku
+- Enable secure communication between isolated environments
 
-- **Firewall deployment - basic :** https://learn.microsoft.com/en-us/azure/firewall/deploy-firewall-basic-portal-policy
+- Test scalability and modular expansion
