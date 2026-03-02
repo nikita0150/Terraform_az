@@ -61,3 +61,8 @@ variable "gateway_subnet_cidr" {
   type    = string
   default = null
 }
+
+variable "spoke_vnet_address_space" {
+  description = "Address space of spoke VNet"
+  type        = string
+}

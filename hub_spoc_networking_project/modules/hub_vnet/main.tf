@@ -51,6 +51,53 @@ resource "azurerm_public_ip" "firewall_pip" {
   sku                 = "Standard"
 }
 
+resource "azurerm_firewall_policy" "hub_fw_policy" {
+  count               = var.create_firewall_subnet ? 1 : 0
+  name                = "${var.hub_vnet_name}-fw-policy"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku                 = var.firewall_sku_tier
+
+  tags = var.tags
+}
+
+resource "azurerm_firewall_policy_rule_collection_group" "default_rules" {
+  count              = var.create_firewall_subnet ? 1 : 0
+  name               = "default-rule-group"
+  firewall_policy_id = azurerm_firewall_policy.hub_fw_policy[0].id
+  priority           = 100
+
+  network_rule_collection {
+    name     = "allow-internet"
+    priority = 100
+    action   = "Allow"
+
+    rule {
+      name                  = "allow-http-https"
+      protocols             = ["TCP"]
+      source_addresses      = [var.spoke_vnet_address_space]
+      destination_addresses = ["*"]
+      destination_ports     = ["80", "443"]
+    }
+  }
+    application_rule_collection {
+    name     = "allow-web"
+    priority = 200
+    action   = "Allow"
+
+    rule {
+      name             = "allow-ms-updates"
+      source_addresses = ["10.1.0.0/16"]
+      target_fqdns     = ["*.microsoft.com"]
+
+      protocol {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+}
+
 resource "azurerm_firewall" "hub_fw" {
   count               = var.create_firewall_subnet ? 1 : 0
   name                = "${var.hub_vnet_name}-azfw"
@@ -58,6 +105,8 @@ resource "azurerm_firewall" "hub_fw" {
   resource_group_name = var.resource_group_name
   sku_name            = "AZFW_VNet"
   sku_tier            = var.firewall_sku_tier
+
+  firewall_policy_id = azurerm_firewall_policy.hub_fw_policy[0].id
 
   ip_configuration {
     name                 = "fw-ipconfig"

@@ -25,7 +25,7 @@ module "hub_vnet" {
   resource_group_name = local.hub_rg_name
   hub_vnet_name       = local.hub_vnet_name
   address_space       = var.hub_address_space
-
+  
   subnet_prefixes = var.hub_subnet_prefixes
   
   create_firewall_subnet = true
@@ -38,10 +38,12 @@ module "hub_vnet" {
   create_gateway_subnet  = true
   gateway_subnet_cidr    = var.gateway_subnet_cidr
 
+  spoke_vnet_address_space = var.spoke_vnet_address_space
+  
   tags = local.final_tags
 }
-##spoke setup
 
+##spoke setup
 module "spoke_vnet" {
   source             = "../../modules/spoke_vnet"
   location            = var.location
