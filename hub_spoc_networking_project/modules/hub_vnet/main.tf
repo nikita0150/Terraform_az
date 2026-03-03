@@ -9,16 +9,16 @@ resource "azurerm_virtual_network" "hub_vnet" {
 
 # Generic Subnets
 resource "azurerm_subnet" "generic_subnets" {
-  for_each = var.subnet_prefixes 
+  for_each = var.subnet_prefixes  #pick up value dynamically from variable hub_subnet_prefixes in dev.tfvars
   name                 = each.key
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
-  address_prefixes     = [each.value]
+  address_prefixes     = [each.value] 
 }
 
 resource "azurerm_network_security_group" "generic_nsg" {
   for_each = var.subnet_prefixes
-  name                = "${var.hub_vnet_name}-${each.key}-nsg"
+  name                = "${var.hub_vnet_name}-${each.key}-nsg" # ${something} - this $ evaluates whatever inside the block and convert it into string
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -34,7 +34,7 @@ resource "azurerm_subnet_network_security_group_association" "generic_assoc" {
 
 # Azure Firewall Subnet (keep the name as AzureFirewallSubnet - compulsory)
 resource "azurerm_subnet" "firewall_subnet" {
-  count = var.create_firewall_subnet ? 1 : 0
+  count = var.create_firewall_subnet ? 1 : 0 # a ternary conditional expression --> condition ? true_value : false_value
   name                 = "AzureFirewallSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
@@ -48,8 +48,8 @@ resource "azurerm_public_ip" "firewall_pip" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
-  sku                 = "Standard"
-}
+  sku                 = "Standard" 
+} 
 
 resource "azurerm_firewall_policy" "hub_fw_policy" {
   count               = var.create_firewall_subnet ? 1 : 0
@@ -120,7 +120,7 @@ resource "azurerm_firewall" "hub_fw" {
 # Azure Bastion Subnet (Mandatory Name)
 resource "azurerm_subnet" "bastion_subnet" {
   count = var.create_bastion_subnet ? 1 : 0
-  name                 = "AzureBastionSubnet"
+  name                 = "AzureBastionSubnet" #use to connect to VM securely without exposing to public IP on VM
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
   address_prefixes     = [var.bastion_subnet_cidr]
@@ -129,7 +129,7 @@ resource "azurerm_subnet" "bastion_subnet" {
 # Gateway Subnet (Mandatory Name)
 resource "azurerm_subnet" "gateway_subnet" {
   count = var.create_gateway_subnet ? 1 : 0
-  name                 = "GatewaySubnet"
+  name                 = "GatewaySubnet" #virtual gateaway subnet allows you to create VPN gateway or ExpressRoute gateway to connect on-premises network to Azure
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
   address_prefixes     = [var.gateway_subnet_cidr]

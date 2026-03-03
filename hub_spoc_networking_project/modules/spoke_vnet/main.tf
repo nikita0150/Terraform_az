@@ -8,7 +8,7 @@ resource "azurerm_virtual_network" "spoke_vnet" {
 
 resource "azurerm_subnet" "spoke_subnet" {
   for_each = var.subnet_prefixes
-  name                 = each.key 
+  name                 = "${var.spoke_vnet_name}-${each.key}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.spoke_vnet.name
   address_prefixes     = [each.value]
@@ -42,8 +42,8 @@ resource "azurerm_route_table" "spoke_rt" {
   route {
     name           = "default-route"
     address_prefix = "0.0.0.0/0"
-    next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = var.firewall_private_ip
+    next_hop_type  = "VirtualAppliance" #specify the next hop type as virtual appliance to route traffic to firewall
+    next_hop_in_ip_address = var.firewall_private_ip #private IP of firewall in hub vnet to route traffic from spoke to firewall for inspection
   }
 
   tags = var.tags
