@@ -12,7 +12,7 @@ The objective of this POC was to:
 
 - Test scalability and modular expansion
 
-## 🔹 Components
+## Components
 
 ### Hub
 - Centralized routing
