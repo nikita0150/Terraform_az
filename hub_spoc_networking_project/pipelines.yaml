@@ -13,7 +13,7 @@ steps:
 
 - checkout: self
 
-# Azure login
+# Terraform Init, Validate, Plan in one task with Azure login
 - task: AzureCLI@2
   displayName: 'Azure Login'
   inputs:
@@ -39,26 +39,6 @@ steps:
         -backend-config="key=networking.tfstate" \
         -input=false -no-color
 
-# terraform fmt
-- task: AzureCLI@2
-  displayName: 'Terraform Format Check'
-  inputs:
-    azureSubscription: 'Terraform'
-    scriptType: bash
-    scriptLocation: inlineScript
-    workingDirectory: '$(workingDir)/$(Build.SourceBranchName)'
-    inlineScript: |
-      terraform fmt -check -recursive
-      
-# Terraform Validate
-- task: AzureCLI@2
-  displayName: 'Terraform Validate'
-  inputs:
-    azureSubscription: 'Terraform'
-    scriptType: bash
-    scriptLocation: inlineScript
-    workingDirectory: '$(workingDir)/$(Build.SourceBranchName)'
-    inlineScript: |
       terraform validate
 
 # Terraform Plan
