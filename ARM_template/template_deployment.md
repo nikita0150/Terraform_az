@@ -13,7 +13,7 @@
 
 - Select: Resource Group -> Region -> Click Review + Create → Create
 
-## Using Azure CLI
+## 2. Using Azure CLI
 
 - Basic command 
     az deployment group create \
@@ -30,7 +30,7 @@
     | Management Group | `az deployment mg create`     |
     | Tenant           | `az deployment tenant create` |
      
-## Using powershell
+## 3. Using powershell
 - Login 
     Connect-AzAccount
 
@@ -39,7 +39,7 @@
   -ResourceGroupName "rg-demo" `
   -TemplateFile "template.json"
 
-## Using Azure devops pipeline
+## 4. Using Azure devops pipeline
 - YAML -> 
 
     trigger:
