@@ -31,12 +31,12 @@
     | Tenant           | `az deployment tenant create` |
      
 ## 3. Using powershell
-- Login 
-    Connect-AzAccount
+- Login \
+    Connect-AzAccount \
 
-- Deploy template 
-   New-AzResourceGroupDeployment `
-  -ResourceGroupName "rg-demo" `
+- Deploy template \
+   New-AzResourceGroupDeployment `\
+  -ResourceGroupName "rg-demo" `\
   -TemplateFile "template.json"
 
 ## 4. Using Azure devops pipeline
@@ -48,15 +48,15 @@
     pool:
     vmImage: ubuntu-latest
 
-    steps:
+    steps: \
 
-    - task: AzureResourceManagerTemplateDeployment@3
-    inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'Azure-Service-Connection'
-        subscriptionId: 'xxxx-xxxx-xxxx'
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: 'rg-demo'
+    - task: AzureResourceManagerTemplateDeployment@3 \
+    inputs:\
+        deploymentScope: 'Resource Group'\
+        azureResourceManagerConnection: 'Azure-Service-Connection'\
+        subscriptionId: 'xxxx-xxxx-xxxx'\
+        action: 'Create Or Update Resource Group'\
+        resourceGroupName: 'rg-demo'\
         location: 'East US'
         templateLocation: 'Linked artifact'
         csmFile: 'arm/template.json'
