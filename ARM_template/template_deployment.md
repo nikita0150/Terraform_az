@@ -30,7 +30,7 @@
     | Management Group | `az deployment mg create`     |
     | Tenant           | `az deployment tenant create` |
      
-# Using powershell
+## Using powershell
 - Login 
     Connect-AzAccount
 
